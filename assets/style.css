@@ -11,3 +11,64 @@ main {
 a {
     color: orange;
 }
+
+.bordered {
+    border-style: solid;
+    border-color: black;
+    border-width: 2px;
+}
+
+div.navbar {
+    display:flex;
+    margin: 0;
+    padding: 0;
+    background-color: #121;
+    width:100vw;
+    justify-content:center;
+
+}
+
+ul.navbar {
+   list-style-type: none;
+   width:100%
+}
+div.navbar-elem{
+    width:100%;
+}
+div.navbar-elem, a.navbar-elem{
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+a.navbar:hover {
+    background-color: #464
+}
+
+.outer-dog-div {
+    display: flex;
+    width:90vw;
+    justify-content:center;
+    align-items: center;
+}
+
+div.inner-dog {
+    width: 33%;
+    padding: 5px;
+    margin: 5px;
+}
+img.inner-dog {
+    width: 100%;
+    padding: 5px;
+    margin: 5px;
+}
+
+.centered-vertical-flexbox {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+
+

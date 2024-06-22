@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Eden Ottley-Hodgson</title>
+    <script src="/script.js"></script>
+    <link rel="stylesheet" href="style.css" />
+    <script src="/htmx.min.js"></script>
+</head>
+
+<body>
+    <main>
+        <div hx-get="/navbar" hx-trigger="load" hx-swap="outerHTML"></div>
+        <div class="centered-vertical-flexbox">
+            <h1>Dogs</h1>
+            <button hx-get="/getdogs" hx-vals="js:{num_dogs: 3}" hx-target="#dog-area" hx-swap="innerHTML">
+                Randomise Dogs
+            </button>
+
+            <div id="dog-area">
+
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

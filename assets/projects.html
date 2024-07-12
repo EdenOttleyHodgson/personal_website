@@ -6,13 +6,22 @@
     <script src="/script.js"></script>
     <link rel="stylesheet" href="style.css" />
     <script src="/htmx.min.js"></script>
+    <script src="https://kit.fontawesome.com/2bcdf56828.js" crossorigin="anonymous"></script>
 </head>
 
 <body>
     <main>
         <div hx-get="/navbar" hx-trigger="load" hx-swap="outerHTML"></div>
-        <h1>Eden Ottley-Hodgson's Website</h1>
-        <p>Todo</p>
+        <h1>Projects</h1>
+        <div id="projects">
+            <div id="project-list" class="bordered" hx-get="/project_selector" hx-swap="innerHTML" hx-trigger="load">
+
+            </div>
+            <div id="project-info" class="bordered">
+
+            </div>
+
+        </div>
     </main>
 </body>
 

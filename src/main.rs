@@ -3,6 +3,7 @@ use axum::response::{IntoResponse, Response};
 use core::panic;
 use lazy_static::lazy_static;
 use rand::prelude::*;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fs::{self, DirEntry, ReadDir};
 use std::iter::empty;
@@ -36,6 +37,86 @@ lazy_static! {
             Err(e) => panic!("{}", e),
         }
     };
+    static ref PROJECT_DATA: HashMap<String, ProjectData> = {
+        match fs::read_dir("./assets/Projects") {
+            Ok(dir) => dir
+                // .flatten()
+                .map(|x| fs::read_to_string(x.unwrap().path()).unwrap())
+                // .flatten()
+                .map(|f| serde_json::from_str::<ProjectData>(&f).unwrap())
+                // .flatten()
+                .map(|p| (p.id.clone(), p))
+                .collect(),
+            Err(e) => panic!("{}", e),
+        }
+    };
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+struct ProjectData {
+    id: String,
+    name: String,
+    repo_url: String,
+    description: String,
+    thumbnail_url: String,
+    technologies_used: Vec<String>,
+}
+
+impl Into<Html<String>> for ProjectData {
+    fn into(self) -> Html<String> {
+        let name_html = format!("<h2>{}</h2>", self.name);
+        let repo_html = format!(
+            "<a href=\"{}\"class=\"fa-brands fa-github\"></a>",
+            self.repo_url
+        );
+        let description_html = format!("<p>{}</p>", self.description);
+        let thumbnail_html = format!(
+            "<img alt=\"project thumbnail\" src=\"{}\"></img>",
+            self.thumbnail_url
+        );
+        let technologies_html = {
+            let mut html = String::new();
+            for technology in self.technologies_used {
+                let to_push = format!("<div class=\"technology\">{technology}</div>");
+                html.push_str(&to_push)
+            }
+            html
+        };
+        let final_html = format!(
+            "
+        <div class=\"centered-vertical-flexbox\">
+            <div class=\"centered-horizontal-flexbox\">
+                {name_html}
+                {repo_html}
+            </div>
+            <div class=\"centered-horizontal-flexbox\">
+                <div>
+                    {description_html}
+                </div>
+                <div class=\"centered-vertical-flexbox\">
+                    {thumbnail_html}
+                    <div class=\"centered-vertical-flexbox\">
+                        {technologies_html}
+                    </div>
+                </div>
+            </div>
+        </div>
+        "
+        );
+
+        Html(final_html)
+    }
+}
+impl ProjectData {
+    fn button_html(&self) -> String {
+        let vals = format!("js:{{id: '{}'}}", self.id);
+        let out = format!(
+            "<button hx-get=\"get_project_data\" hx-vals=\"{}\" hx-target=\"#project-info\" hx-swap=\"innerHTML\"class=\"project-selector\">{}</button>",
+            vals, self.name
+        );
+        println!("{}", out);
+        out
+    }
 }
 
 #[shuttle_runtime::main]
@@ -52,6 +133,8 @@ async fn main() -> shuttle_axum::ShuttleAxum {
         .route("/htmx.min.js", r::get(htmx))
         .route("/test", r::get(clicked))
         .route("/getdogs", r::get(get_random_dogs))
+        .route("/get_project_data", r::get(get_project_data))
+        .route("/project_selector", r::get(project_selector))
         .nest_service("/dogpictures", ServeDir::new("assets/Dogs"));
 
     Ok(router.into())
@@ -115,6 +198,31 @@ async fn navbar() -> Html<String> {
     }
     html_str.push_str("</div>");
     Html(html_str)
+}
+
+async fn get_project_data(Query(params): Query<HashMap<String, String>>) -> Html<String> {
+    let id = if let Some(id) = params.get("id") {
+        id
+    } else {
+        println!("Bad request for project data!");
+        return Html("<p> bad request! </p>".to_owned());
+    };
+    PROJECT_DATA
+        .get(id)
+        .map(|f| {
+            let h: Html<String> = Into::into(f.clone());
+            h
+        })
+        .unwrap_or(Html("<p>Project not Found!</p>".to_owned()))
+}
+
+async fn project_selector() -> Html<String> {
+    let mut html = String::from("<div class=\"centered-vertical-flexbox project_selector_box\">");
+    for (_, project) in PROJECT_DATA.iter() {
+        html.push_str(&project.button_html())
+    }
+    html.push_str("</div>");
+    Html(html)
 }
 
 async fn get_random_dogs(Query(params): Query<HashMap<String, String>>) -> Html<String> {

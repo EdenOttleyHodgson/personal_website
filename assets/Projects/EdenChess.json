@@ -1,0 +1,10 @@
+{
+"id": "id_eden_chess",
+"name": "Eden Chess",
+"repo_url": "https://github.com/EdenOttleyHodgson/EdenChess",
+"description": "TUI Chess Game",
+"thumbnail_url": "",
+"technologies_used": [
+  "Rust", "Ratatui"
+]
+}

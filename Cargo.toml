@@ -8,9 +8,9 @@ publish = false
 axum = "0.7.3"
 lazy_static = "1.5.0"
 rand = "0.8.5"
-serde = {version="1.0.204", features=["derive"]}
+serde = { version = "1.0.204", features = ["derive"] }
 serde_json = "1.0.120"
-shuttle-axum = "0.46.0"
-shuttle-runtime = "0.46.0"
+shuttle-axum = "0.48.0"
+shuttle-runtime = "0.48.0"
 tokio = "1.28.2"
 tower-http = { version = "0.5.0", features = ["fs"] }
